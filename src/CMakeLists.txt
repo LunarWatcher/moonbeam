@@ -1,6 +1,7 @@
 add_library(moonbeam SHARED
 
     moonbeam/Moonbeam.cpp
+    moonbeam/common/IterUtils.cpp
 
     moonbeam/system/Process.cpp
 )

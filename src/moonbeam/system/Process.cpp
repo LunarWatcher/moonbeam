@@ -2,6 +2,7 @@
 
 #include "lauxlib.h"
 #include "lua.h"
+#include "moonbeam/common/IterUtils.hpp"
 #include "moonbeam/udata/TypeRegistry.hpp"
 #include <iostream>
 #include <stc/unix/Process.hpp>
@@ -66,19 +67,51 @@ int system::process(lua_State* L) {
 
     // TODO: stc should support string_view. Lua owns these strings, so copying them is redundant
     std::vector<std::string> command;
+    std::optional<stc::Unix::Environment> env;
     command.reserve(
-        lua_gettop(L)
+        util::length(L, 1)
     );
 
-    for (size_t i = 0; i < (size_t) lua_gettop(L); ++i) {
-        luaL_checktype(L, i + 1, LUA_TSTRING);
-        size_t size;
-        auto str = luaL_checklstring(
+    luaL_checktype(L, 1, LUA_TTABLE);
+
+    util::iterateTable(
+        L,
+        1,
+        [&]() {
+            luaL_checktype(L, -1, LUA_TSTRING);
+            size_t size;
+            auto str = luaL_checklstring(
+                L,
+                -1,
+                &size
+            );
+            command.push_back({str, size});
+        }
+    );
+
+    if (lua_gettop(L) >= 2) {
+        luaL_checktype(L, 2, LUA_TTABLE);
+        env = stc::Unix::Environment();
+        util::iterateTable(
             L,
-            i + 1,
-            &size
+            2,
+            [&]() {
+                luaL_checktype(L, -1, LUA_TSTRING);
+                luaL_checktype(L, -2, LUA_TSTRING);
+                size_t kSize, vSize;
+                auto k = luaL_checklstring(
+                    L,
+                    -2,
+                    &kSize
+                );
+                auto v = luaL_checklstring(
+                    L,
+                    -1,
+                    &vSize
+                );
+                env->env[std::string{k, kSize}] = std::string{v, vSize};
+            }
         );
-        command.push_back({str, size});
     }
 
     auto** proc = (stc::Unix::Process**) lua_newuserdata(
@@ -89,7 +122,8 @@ int system::process(lua_State* L) {
 
     *proc = new stc::Unix::Process(
         command,
-        stc::Unix::Pipes::separate(true)
+        stc::Unix::Pipes::separate(true),
+        env
     );
 
     return 1;

@@ -1,6 +1,6 @@
 --- @meta
 
---- Represents an stc::Unix::Process object
+--- Represents an stc::Unix::Process object; this is userdata
 --- @class Process
 Process = {}
 
@@ -22,10 +22,12 @@ function Process:closeStdin() end
 --- @return number
 function Process:block() end
 
---- Starts a process. Takes input arguments in the format `process("executable", "arg1", "arg2", ..., "argN")`.
---- @param ... string
+--- Starts a process.
+--- 
+--- @param command string[]
+--- @param env? table<string, string>?
 --- @return Process
-function process(...) end
+function process(command, env) end
 
 return {
     ["process"] = process
