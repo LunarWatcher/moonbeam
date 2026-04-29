@@ -1,0 +1,46 @@
+#include "Json.hpp"
+
+#include <lua.hpp>
+
+namespace moonbeam {
+
+void json::parseInternal(lua_State* state, const nlohmann::json& json) {
+    if (json.is_null()) {
+        lua_pushnil(state);
+    } else if (json.is_number_integer()) {
+        lua_pushinteger(state, json.get<long long>());
+    } else if (json.is_number_float()) {
+        lua_pushnumber(state, json.get<double>());
+    } else if (json.is_string()) {
+        lua_pushstring(state, json.get<std::string>().c_str());
+    } else if (json.is_boolean()) {
+        lua_pushboolean(state, static_cast<int>(json.get<bool>()));
+    } else if (json.is_array()) {
+        lua_newtable(state);
+
+        int index = 0;
+        for (const auto& value : json) {
+            parseInternal(state, value);
+            lua_seti(state, -2, ++index);
+        }
+    } else if (json.is_object()) {
+        lua_newtable(state);
+
+        for (const auto& [k, v] : json.items()) {
+            parseInternal(state, v);
+            luaL_checktype(state, -2, LUA_TTABLE);
+            lua_setfield(state, -2, k.c_str()); // step[k] = v
+        }
+    } else {
+        throw std::runtime_error("bad JSON parsing at " + json.dump());
+    }
+}
+
+int json::parse(lua_State* state) {
+    auto json = nlohmann::json::parse(luaL_checkstring(state, 1));
+    parseInternal(state, json);
+
+    return 1;
+}
+
+}

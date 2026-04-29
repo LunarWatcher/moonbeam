@@ -11,5 +11,6 @@ print(io.popen("pwd"):read())
 lu = require("luaunit");
 
 require "system.test_process"
+require "json.test_json"
 
 os.exit(lu.LuaUnit.run())

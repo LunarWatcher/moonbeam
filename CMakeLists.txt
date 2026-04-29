@@ -28,8 +28,14 @@ include(FetchContent)
 FetchContent_Declare(stc
     GIT_REPOSITORY https://github.com/LunarWatcher/stc
 )
+FetchContent_Declare(nlohmann
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_TAG v3.12.0
+    EXCLUDE_FROM_ALL
+)
 FetchContent_MakeAvailable(
     stc
+    nlohmann
 )
 
 find_package(Lua 5.4 REQUIRED)

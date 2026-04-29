@@ -4,9 +4,15 @@
 --- @class Process
 Process = {}
 
---- Reads the contents of the buffer, and resets the internal buffer to avoid repeating the same text multiple times.
+--- Reads the contents of the stdout buffer, and resets the internal buffer to avoid repeating the same text multiple
+--- times.
 --- @return string
-function Process:read() end
+function Process:readStdout() end
+
+--- Reads the contents of the stderr buffer, and resets the internal buffer to avoid repeating the same text multiple
+--- times.
+--- @return string
+function Process:readStderr() end
 
 --- Writes a string to stdin
 --- @param content string

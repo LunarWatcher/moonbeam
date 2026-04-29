@@ -22,6 +22,11 @@ int system::Process::freeProcess(lua_State* L) {
 int system::Process::readStdout(lua_State* L) {
     // TODO: validate properly
     auto udata = (stc::Unix::Process**) luaL_checkudata(L, 1, UdataStcProcess);
+    if (udata == nullptr) {
+        return luaL_typeerror(L, 1, "The first argument must be a UdataStcProcessPtr");
+    } else if (*udata == nullptr) {
+        return luaL_error(L, "Illegal use of freed and gc'd udata");
+    }
 
     auto str = (**udata).getStdoutBuffer(true);
     lua_pushlstring(
@@ -29,12 +34,34 @@ int system::Process::readStdout(lua_State* L) {
         str.c_str(),
         str.size()
     );
-    
+    return 1;
+}
+
+int system::Process::readStderr(lua_State* L) {
+    // TODO: validate properly
+    auto udata = (stc::Unix::Process**) luaL_checkudata(L, 1, UdataStcProcess);
+    if (udata == nullptr) {
+        return luaL_typeerror(L, 1, "The first argument must be a UdataStcProcessPtr");
+    } else if (*udata == nullptr) {
+        return luaL_error(L, "Illegal use of freed and gc'd udata");
+    }
+
+    auto str = (**udata).getStderrBuffer(true);
+    lua_pushlstring(
+        L,
+        str.c_str(),
+        str.size()
+    );
     return 1;
 }
 
 int system::Process::writeStdin(lua_State* L) {
     auto udata = (stc::Unix::Process**) luaL_checkudata(L, 1, UdataStcProcess);
+    if (udata == nullptr) {
+        return luaL_typeerror(L, 1, "The first argument must be a UdataStcProcessPtr");
+    } else if (*udata == nullptr) {
+        return luaL_error(L, "Illegal use of freed and gc'd udata");
+    }
     size_t size;
     auto str = luaL_checklstring(L, 2, &size);
 
@@ -45,12 +72,26 @@ int system::Process::writeStdin(lua_State* L) {
 
 int system::Process::closeStdin(lua_State* L) {
     auto udata = (stc::Unix::Process**) luaL_checkudata(L, 1, UdataStcProcess);
+    if (udata == nullptr) {
+        return luaL_typeerror(L, 1, "The first argument must be a UdataStcProcessPtr");
+    } else if (*udata == nullptr) {
+        return luaL_error(L, "Illegal use of freed and gc'd udata");
+    }
     (**udata).closeStdin();
     return 0;
 }
 
 int system::Process::block(lua_State* L) {
+    if (lua_gettop(L) != 1) {
+        return luaL_error(L, "This function requires a process to operate on");
+    }
     auto udata = (stc::Unix::Process**) luaL_checkudata(L, 1, UdataStcProcess);
+    if (udata == nullptr) {
+        return luaL_typeerror(L, 1, "The first argument must be a UdataStcProcessPtr");
+    } else if (*udata == nullptr) {
+        return luaL_error(L, "Illegal use of freed and gc'd udata");
+    }
+    
     int code = (**udata).block();
 
     lua_pushnumber(L, code);
@@ -122,6 +163,7 @@ int system::process(lua_State* L) {
 
     *proc = new stc::Unix::Process(
         command,
+        // TODO: Pipes::shared seems to be fucked. need to patch stc
         stc::Unix::Pipes::separate(true),
         env
     );

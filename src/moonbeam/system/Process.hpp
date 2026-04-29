@@ -8,13 +8,15 @@ namespace Process {
 
 extern int freeProcess(lua_State* L);
 extern int readStdout(lua_State* L);
+extern int readStderr(lua_State* L);
 extern int writeStdin(lua_State* L);
 extern int closeStdin(lua_State* L);
 extern int block(lua_State* L);
 
 
 const static luaL_Reg procMetatable[] = {
-    { "read", readStdout },
+    { "readStdout", readStdout },
+    { "readStderr", readStderr },
     { "write", writeStdin },
     { "closeStdin", closeStdin },
     { "block", block },

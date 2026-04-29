@@ -1,6 +1,7 @@
 #include <lua.hpp>
 
 #include "moonbeam/common/UdataUtils.hpp"
+#include "moonbeam/json/Json.hpp"
 #include "moonbeam/system/Process.hpp"
 #include "moonbeam/udata/TypeRegistry.hpp"
 #include "system/System.hpp"
@@ -25,8 +26,14 @@ int luaopen_moonbeam_system(lua_State* L) {
         moonbeam::system::Process::procMetatable,
         UdataStcProcess
     );
-    
+
     return 1;
 }
-    
+
+int luaopen_moonbeam_json(lua_State* L) {
+    luaL_newlib(L, moonbeam::json::functions);
+    return 1;
+}
+
+
 }

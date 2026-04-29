@@ -1,7 +1,7 @@
 local moonsys = require("moonbeam.system");
 local lu = require("luaunit");
 
-TestErrors = {
+TestSystemErrors = {
     tearDown = function()
         -- Need to make sure we properly close everything
         collectgarbage();
@@ -33,7 +33,7 @@ TestErrors = {
 }
 
 -- Largely mirrored from the stc tests
-TestBaseLineFunctionality = {
+TestSystemBaselineFunctionality = {
     tearDown = function()
         -- Need to make sure we properly close everything
         collectgarbage();
@@ -50,7 +50,7 @@ TestBaseLineFunctionality = {
             0
         );
         lu.assertEquals(
-            proc:read(),
+            proc:readStdout(),
             "good girl :3"
         );
     end,
@@ -69,7 +69,7 @@ TestBaseLineFunctionality = {
             0
         );
         lu.assertEquals(
-            proc:read(),
+            proc:readStdout(),
             "good girl :3"
         );
     end,
@@ -88,7 +88,7 @@ TestBaseLineFunctionality = {
             0
         );
         lu.assertEquals(
-            proc:read(),
+            proc:readStdout(),
             "trans rights are human rights"
         );
     end,
@@ -109,7 +109,7 @@ TestBaseLineFunctionality = {
             0
         );
         lu.assertEquals(
-            proc:read(),
+            proc:readStdout(),
             "good girl :3"
         );
     end,
@@ -127,7 +127,7 @@ TestBaseLineFunctionality = {
             0
         );
         lu.assertEquals(
-            proc:read(),
+            proc:readStdout(),
             ""
         );
     end,
