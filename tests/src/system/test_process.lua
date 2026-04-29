@@ -1,17 +1,82 @@
-local moonbeam = require("moonbeam");
+local moonsys = require("moonbeam.system");
+local lu = require("luaunit");
 
--- TODO: seeing as moonbeam.system is nil, how do I want to go about this?
--- I probably want to separate the imports since I want to be able to not have to import the entirety of moonbeam for
--- like a single file or whatever, so splitting it up likely makes sense. The DLL is still going to be loaded in its
--- entirety, but that's because I can't be bothered dealing with multiple versions of it and shit
-print(moonbeam)
-print(moonbeam.system)
-print(require("moonbeam.system"))
+TestErrors = {
+    testArgumentValidation = function()
+        lu.assertErrorMsgContentEquals(
+            "This function requires at least one argument",
+            moonsys.process
+        );
+    end,
+    testArgumentTypeValidation = function()
+        lu.assertErrorMsgContains(
+            "string expected, got number",
+            moonsys.process,
+            "test",
+            69
+        )
+    end,
+}
 
-print(moonbeam.test_global)
+-- Largely mirrored from the stc tests
+TestBaseLineFunctionality = {
+    tearDown = function()
+        -- Need to make sure we properly close everything
+        collectgarbage();
+    end,
+    testOutput = function()
+        local proc = moonsys.process(
+            "/usr/bin/bash",
+            "-c",
+            "echo -n 'good girl :3'"
+        )
+        lu.assertIsUserdata(proc);
+        lu.assertEquals(
+            proc:block(),
+            0
+        );
+        lu.assertEquals(
+            proc:read(),
+            "good girl :3"
+        );
+    end,
+    testInput = function()
+        local proc = moonsys.process(
+            "/usr/bin/bash",
+            "-c",
+            "cat"
+        );
+        lu.assertIsUserdata(proc);
+        proc:write("good girl :3");
+        -- Closing stdin signals that `cat` has nothing more to read
+        proc:closeStdin();
+        lu.assertEquals(
+            proc:block(),
+            0
+        );
+        lu.assertEquals(
+            proc:read(),
+            "good girl :3"
+        );
+    end,
+    testInputTestCorrectness = function()
+        -- This test verifies that the pipes used in the previous test indeed are separate. if `stdin` is piped to
+        -- `stdout`, we expect this test to show both the echo string and the input string
+        local proc = moonsys.process(
+            "/usr/bin/bash",
+            "-c",
+            "echo -n 'trans rights are human rights' && sleep 1"
+        );
+        lu.assertIsUserdata(proc);
+        proc:write("good girl :3");
+        lu.assertEquals(
+            proc:block(),
+            0
+        );
+        lu.assertEquals(
+            proc:read(),
+            "trans rights are human rights"
+        );
+    end,
+}
 
-function TestProcess()
-   lu.assertEquals(
-      1, 1
-   )
-end
