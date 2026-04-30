@@ -29,7 +29,7 @@ function Process:closeStdin() end
 function Process:block() end
 
 --- Starts a process.
---- 
+---
 --- @param command string[]
 --- @param env? table<string, string>?
 --- @return Process

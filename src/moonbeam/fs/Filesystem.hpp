@@ -2,12 +2,12 @@
 
 #include <lua.hpp>
 
-#include "Process.hpp"
+namespace moonbeam::filesystem {
 
-namespace moonbeam::system {
+extern int findInPath(lua_State* L);
 
 inline const static luaL_Reg functions[] = {
-    { "process", system::process },
+    { "findInPath", findInPath },
     { nullptr, nullptr },
 };
 

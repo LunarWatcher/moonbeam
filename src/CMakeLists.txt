@@ -6,6 +6,8 @@ add_library(moonbeam SHARED
     moonbeam/json/Json.cpp
 
     moonbeam/system/Process.cpp
+
+    moonbeam/fs/Filesystem.cpp
 )
 set_target_properties(
     moonbeam PROPERTIES PREFIX ""

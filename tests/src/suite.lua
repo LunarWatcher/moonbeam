@@ -12,5 +12,6 @@ lu = require("luaunit");
 
 require "system.test_process"
 require "json.test_json"
+require "fs.test_filesystem"
 
 os.exit(lu.LuaUnit.run())
