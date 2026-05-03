@@ -9,7 +9,7 @@ FetchContent_MakeAvailable(
 )
 
 add_custom_target(test
-    COMMAND lua5.4 "${CMAKE_CURRENT_SOURCE_DIR}/src/suite.lua" -v
+    COMMAND lua "${CMAKE_CURRENT_SOURCE_DIR}/src/suite.lua" -v
     DEPENDS moonbeam
     COMMENT "Test moonbeam"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
