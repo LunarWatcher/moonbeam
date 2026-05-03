@@ -39,6 +39,7 @@ FetchContent_MakeAvailable(
 )
 
 find_package(Lua 5.4 REQUIRED)
+string(SUBSTRING ${Lua_VERSION} 0 3 LUA_BINARY_NAME)
 
 add_subdirectory(src)
 

@@ -25,5 +25,5 @@ target_include_directories(moonbeam PUBLIC
 
 install(
     TARGETS moonbeam
-    DESTINATION lib/lua/5.4/
+    DESTINATION lib/lua/${LUA_BINARY_NAME}/
 )
