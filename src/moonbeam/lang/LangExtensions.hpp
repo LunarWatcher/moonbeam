@@ -15,6 +15,10 @@ struct Box {
         std::string,
         bool
     > value;
+
+    bool isBool() const {
+        return std::holds_alternative<bool>(value);
+    }
 };
 
 extern int unwrap(lua_State* L);

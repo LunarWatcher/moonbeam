@@ -40,25 +40,22 @@ Box = {}
 --- @return T
 function Box:unwrap() end
 
+local lang = {}
+
 --- Creates a new bool Box.
 --- @return Box<boolean>
-function newBoolBox() end
+function lang.newBoolBox() end
 
 --- Creates a new string Box
 --- @return Box<string>
-function newStringBox() end
+function lang.newStringBox() end
 
 --- Creates a new int Box
 --- @return Box<number>
-function newIntBox() end
+function lang.newIntBox() end
 
 --- Creates a new double Box
 --- @return Box<number>
-function newDoubleBox() end
+function lang.newDoubleBox() end
 
-return {
-    ["newBoolBox"] = newBoolBox,
-    ["newStringBox"] = newStringBox,
-    ["newIntBox"] = newIntBox,
-    ["newDoubleBox"] = newDoubleBox,
-}
+return lang

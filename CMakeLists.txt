@@ -8,12 +8,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-if (NOT ENABLE_CONAN)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-endif()
-
-
-set(MAGPIE_STANDALONE ON)
 
 if (NOT WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
@@ -27,6 +21,7 @@ message(STATUS "\t- Tests: ${MOONBEAM_BUILD_TESTS}")
 include(FetchContent)
 FetchContent_Declare(stc
     GIT_REPOSITORY https://github.com/LunarWatcher/stc
+    GIT_TAG v2026.06.30
 )
 FetchContent_Declare(nlohmann
     GIT_REPOSITORY https://github.com/nlohmann/json
@@ -35,7 +30,7 @@ FetchContent_Declare(nlohmann
 )
 FetchContent_Declare(cli12
     GIT_REPOSITORY https://github.com/LunarWatcher/CLI12
-    GIT_TAG main
+    GIT_TAG v3.1.0
 )
 FetchContent_MakeAvailable(
     stc
@@ -45,6 +40,7 @@ FetchContent_MakeAvailable(
 
 find_package(Lua 5.4 REQUIRED)
 string(SUBSTRING ${LUA_VERSION_STRING} 0 3 LUA_BINARY_NAME)
+message(STATUS "Using Lua ${LUA_BINARY_NAME}")
 
 add_subdirectory(src)
 

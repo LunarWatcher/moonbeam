@@ -1,10 +1,10 @@
 --- @meta
 
+local json = {}
+
 --- Parses a string as json
 --- @param str string
 --- @return table
-function parse(str) end
+function json.parse(str) end
 
-return {
-    ["parse"] = parse
-}
+return json

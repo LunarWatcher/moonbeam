@@ -1,11 +1,13 @@
 #include "CLI.hpp"
 #include "CLI/CLI.hpp"
+#include "moonbeam/common/CppExtensions.hpp"
 #include "moonbeam/common/IterUtils.hpp"
 #include "moonbeam/lang/LangExtensions.hpp"
 #include "moonbeam/udata/TypeRegistry.hpp"
 #include "lua.hpp"
 
 #include <iostream>
+#include <lua.h>
 
 namespace moonbeam {
 
@@ -16,6 +18,12 @@ int Parse::addFlag(lua_State* L) {
     // TODO: make utility wrapper for the three arg form of checkstring with std::string conversion
     auto flagStr = luaL_checkstring(L, 2);
     auto box = (moonbeam::lang::Box::Box**) luaL_checkudata(L, 3, UdataBoxedPrimitive);
+    if (!(**box).isBool()) {
+        return luaL_error(
+            L,
+            "app:addFlag requires a bool box"
+        );
+    }
     auto flagDescription = luaL_checkstring(L, 4);
     std::visit(
         [&](auto& v) {
@@ -67,16 +75,27 @@ int Parse::parse(lua_State* L) {
 
     std::vector<std::string> args;
     util::iterateTable(L, 2, [&]() {
-        size_t len;
-        auto entry = luaL_checklstring(L, -1, &len);
-        args.push_back(std::string(entry, len));
+        args.push_back(ext::toCppString(L, -1));
     });
 
+    std::vector<const char*> nativeVec;
+    if (!args.empty()) {
+        nativeVec.reserve(args.size());
+        for (auto& arg : args) {
+            nativeVec.push_back(arg.c_str());
+        }
+    }
+
     try {
-        (**udata).app->parse(args);
+        (**udata).app->parse(nativeVec.size(), nativeVec.data());
     } catch (const CLI::ParseError& e) {
         (**udata).app->exit(e);
-        return luaL_error(L, "See --help for correct use of this script");
+        // I don't understand why this requires separate handling, but whatever
+        // Decay to std::exception results in a shit message instead
+        return luaL_error(
+            L,
+            e.what()
+        );
     } catch (const std::exception& e) {
         return luaL_error(L, e.what());
     }
@@ -98,6 +117,39 @@ int Parse::freeApp(lua_State* L) {
         *udata = nullptr;
     }
     return 0;
+}
+
+int Parse::optionRequired(lua_State *L) {
+    auto udata = (CLI::Option**) luaL_checkudata(L, 1, UdataCLI12Option);
+    (**udata).required(true);
+    return 1;
+}
+
+int Parse::optionDefault(lua_State *L) {
+    auto udata = (CLI::Option**) luaL_checkudata(L, 1, UdataCLI12Option);
+
+    switch (lua_type(L, 2)) {
+    case LUA_TNUMBER:
+        if (lua_isinteger(L, 2)) {
+            (*udata)->default_val(luaL_checkinteger(L, 2));
+        } else {
+            (*udata)->default_val(luaL_checknumber(L, 2));
+        }
+        break;
+    case LUA_TSTRING:
+        (*udata)->default_val(ext::toCppString(L, 2));
+        break;
+    case LUA_TBOOLEAN:
+        (*udata)->default_val(lua_toboolean(L, 2));
+        break;
+    default:
+        return luaL_error(
+            L,
+            "%s is not a supported type for option:default",
+            lua_typename(L, 2)
+        );
+    }
+    return 1;
 }
 
 }
