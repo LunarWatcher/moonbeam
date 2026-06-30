@@ -7,6 +7,7 @@
 #include "lua.hpp"
 
 #include <iostream>
+#include <lauxlib.h>
 #include <lua.h>
 
 namespace moonbeam {
@@ -73,9 +74,26 @@ int Parse::addOption(lua_State* L) {
 int Parse::parse(lua_State* L) {
     auto udata = (AppWrapper**) luaL_checkudata(L, 1, UdataCLI12App);
 
+    if (!lua_istable(L, 2)) {
+        return luaL_typeerror(
+            L,
+            2,
+            luaL_typename(L, LUA_TTABLE)
+        );
+    }
+
     std::vector<std::string> args;
     util::iterateTable(L, 2, [&]() {
-        args.push_back(ext::toCppString(L, -1));
+        int pos = luaL_checkinteger(L, -2);
+        // -1 is the lua interpreter, the other 0 and under is other flags that we can discard (lua interpreter flags)
+        if (pos <= 0 && pos != -1) {
+            return;
+        } else if (pos == -1) {
+            // -1 is the program name, as far as I can tell, in all cases. This is the first argument in our vec
+            args.insert(args.begin(), ext::toCppString(L, -1));
+        } else {
+            args.push_back(ext::toCppString(L, -1));
+        }
     });
 
     std::vector<const char*> nativeVec;
@@ -92,8 +110,11 @@ int Parse::parse(lua_State* L) {
         (**udata).app->exit(e);
         // I don't understand why this requires separate handling, but whatever
         // Decay to std::exception results in a shit message instead
+        // TODO: this can still return "This should be caught in your main function, see examples", but not sure how
+        // best to handle it. I want to avoid a just dumb e.what() == "..."
         return luaL_error(
             L,
+            "CLI12 returned potentially internal error message: %s",
             e.what()
         );
     } catch (const std::exception& e) {
