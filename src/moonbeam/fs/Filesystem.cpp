@@ -54,4 +54,10 @@ int filesystem::findInPath(lua_State* L) {
     return 1;
 }
 
+int filesystem::getCwd(lua_State* L) {
+    std::string pwd = std::filesystem::current_path().string();
+    lua_pushlstring(L, pwd.c_str(), pwd.size());
+    return 1;
+}
+
 }

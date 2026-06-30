@@ -20,4 +20,11 @@ TestFilesystem = {
             "/usr/bin/lua5.4"
         )
     end,
+    testCwd = function()
+        local pwd = moonfs.cwd();
+        lu.assertStrContains(
+            pwd,
+            "/moonbeam/tests"
+        )
+    end,
 }

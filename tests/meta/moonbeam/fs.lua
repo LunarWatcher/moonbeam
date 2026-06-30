@@ -9,4 +9,9 @@ local fs = {}
 ---@return string
 function fs.findInPath(searchPath, filename) end
 
+
+--- Returns the current working directory
+--- @return string
+function fs.cwd() end
+
 return fs
