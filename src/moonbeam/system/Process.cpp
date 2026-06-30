@@ -171,4 +171,78 @@ int system::process(lua_State* L) {
     return 1;
 }
 
+int system::nonCaptureProcess(lua_State* L) {
+    if (lua_gettop(L) == 0) {
+        return luaL_error(
+            L,
+            "This function requires at least one argument"
+        );
+    }
+
+    // TODO: stc should support string_view. Lua owns these strings, so copying them is redundant
+    std::vector<std::string> command;
+    std::optional<stc::Unix::Environment> env;
+    command.reserve(
+        util::length(L, 1)
+    );
+
+    luaL_checktype(L, 1, LUA_TTABLE);
+
+    util::iterateTable(
+        L,
+        1,
+        [&]() {
+            luaL_checktype(L, -1, LUA_TSTRING);
+            size_t size;
+            auto str = luaL_checklstring(
+                L,
+                -1,
+                &size
+            );
+            command.push_back({str, size});
+        }
+    );
+
+    if (lua_gettop(L) >= 2) {
+        luaL_checktype(L, 2, LUA_TTABLE);
+        env = stc::Unix::Environment();
+        util::iterateTable(
+            L,
+            2,
+            [&]() {
+                luaL_checktype(L, -1, LUA_TSTRING);
+                luaL_checktype(L, -2, LUA_TSTRING);
+                size_t kSize, vSize;
+                auto k = luaL_checklstring(
+                    L,
+                    -2,
+                    &kSize
+                );
+                auto v = luaL_checklstring(
+                    L,
+                    -1,
+                    &vSize
+                );
+                env->env[std::string{k, kSize}] = std::string{v, vSize};
+            }
+        );
+    }
+
+    auto** proc = (stc::Unix::Process**) lua_newuserdata(
+        L,
+        sizeof(stc::Unix::Process**)
+    );
+    luaL_setmetatable(L, UdataStcProcess);
+
+    *proc = new stc::Unix::Process(
+        command,
+        std::make_shared<stc::Unix::PTY>(),
+        env,
+        {},
+        stc::Unix::ReadHandlers::stdStreamRedirect(false)
+    );
+
+    return 1;
+}
+
 }

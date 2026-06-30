@@ -35,6 +35,13 @@ function Process:block() end
 --- @return Process
 function process(command, env) end
 
+--- Starts a process without captured stdout, stderr, or stdin. Useful for interactive applications
+---
+--- @param command string[]
+--- @param env? table<string, string>?
+--- @return Process
+function nonCaptureProcess(command, env) end
+
 return {
     ["process"] = process
 }

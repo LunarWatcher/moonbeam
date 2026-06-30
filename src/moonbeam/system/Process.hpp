@@ -28,5 +28,6 @@ const static luaL_Reg procMetatable[] = {
 }
 
 extern int process(lua_State* L);
+extern int nonCaptureProcess(lua_State* L);
 
 }

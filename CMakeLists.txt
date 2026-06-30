@@ -21,7 +21,7 @@ message(STATUS "\t- Tests: ${MOONBEAM_BUILD_TESTS}")
 include(FetchContent)
 FetchContent_Declare(stc
     GIT_REPOSITORY https://github.com/LunarWatcher/stc
-    GIT_TAG v2026.06.30
+    GIT_TAG v2026.07.01
 )
 FetchContent_Declare(nlohmann
     GIT_REPOSITORY https://github.com/nlohmann/json
