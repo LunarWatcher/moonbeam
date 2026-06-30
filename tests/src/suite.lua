@@ -8,10 +8,12 @@ package.cpath = "../build/lib/?.so;" .. package.cpath;
 
 print(io.popen("pwd"):read())
 
-lu = require("luaunit");
+local lu = require("luaunit");
 
-require "system.test_process"
-require "json.test_json"
+require "cli.test_cli"
 require "fs.test_filesystem"
+require "json.test_json"
+require "lang.test_box"
+require "system.test_process"
 
 os.exit(lu.LuaUnit.run())

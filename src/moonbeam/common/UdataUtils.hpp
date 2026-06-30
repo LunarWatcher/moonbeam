@@ -1,6 +1,16 @@
 #pragma once
 
+#include "moonbeam/lang/LangExtensions.hpp"
 #include <lua.hpp>
+
+#define GetBoxUdata(name, pos)                                           \
+    auto name = (moonbeam::lang::Box::Box**) luaL_checkudata(L, pos, UdataBoxedPrimitive); \
+    if (name == nullptr) { \
+        return luaL_error( \
+            L, \
+            "Attempted to use GC'd box" \
+        ); \
+    }
 
 namespace moonbeam::util {
 

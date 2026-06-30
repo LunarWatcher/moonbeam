@@ -33,9 +33,14 @@ FetchContent_Declare(nlohmann
     GIT_TAG v3.12.0
     EXCLUDE_FROM_ALL
 )
+FetchContent_Declare(cli12
+    GIT_REPOSITORY https://github.com/LunarWatcher/CLI12
+    GIT_TAG main
+)
 FetchContent_MakeAvailable(
     stc
     nlohmann
+    cli12
 )
 
 find_package(Lua 5.4 REQUIRED)

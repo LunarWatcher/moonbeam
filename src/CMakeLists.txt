@@ -1,12 +1,23 @@
 add_library(moonbeam SHARED
-
+    ## Internals and infra
     moonbeam/Moonbeam.cpp
     moonbeam/common/IterUtils.cpp
 
+    ## Modules
+
+    # CLI module
+    moonbeam/cli/CLI.cpp
+
+    # JSON module
     moonbeam/json/Json.cpp
 
+    # Lang extensions module
+    moonbeam/lang/LangExtensions.cpp
+
+    # Process module
     moonbeam/system/Process.cpp
 
+    # Filesystem module
     moonbeam/fs/Filesystem.cpp
 )
 set_target_properties(
@@ -16,6 +27,7 @@ set_target_properties(
 target_link_libraries(moonbeam PUBLIC
     stc::stc
     nlohmann_json::nlohmann_json
+    CLI12::CLI12
     ${LUA_LIBRARIES}
 )
 target_include_directories(moonbeam PUBLIC
