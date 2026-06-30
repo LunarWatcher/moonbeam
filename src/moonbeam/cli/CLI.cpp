@@ -1,7 +1,11 @@
 #include "CLI.hpp"
+#include "CLI/CLI.hpp"
+#include "moonbeam/common/IterUtils.hpp"
 #include "moonbeam/lang/LangExtensions.hpp"
 #include "moonbeam/udata/TypeRegistry.hpp"
-#include <lauxlib.h>
+#include "lua.hpp"
+
+#include <iostream>
 
 namespace moonbeam {
 
@@ -57,6 +61,28 @@ int Parse::addOption(lua_State* L) {
 
     return 1;
 }
+
+int Parse::parse(lua_State* L) {
+    auto udata = (AppWrapper**) luaL_checkudata(L, 1, UdataCLI12App);
+
+    std::vector<std::string> args;
+    util::iterateTable(L, 2, [&]() {
+        size_t len;
+        auto entry = luaL_checklstring(L, -1, &len);
+        args.push_back(std::string(entry, len));
+    });
+
+    try {
+        (**udata).app->parse(args);
+    } catch (const CLI::ParseError& e) {
+        (**udata).app->exit(e);
+        return luaL_error(L, "See --help for correct use of this script");
+    } catch (const std::exception& e) {
+        return luaL_error(L, e.what());
+    }
+    return 0;
+}
+
 int Parse::freeApp(lua_State* L) {
     auto udata = (AppWrapper**) luaL_checkudata(L, 1, UdataCLI12App);
     // Ugh, this got messy

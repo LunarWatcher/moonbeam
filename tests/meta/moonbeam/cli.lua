@@ -25,6 +25,11 @@ function CLIApp:addFlag(flag, dataBox, flagDescription) end
 --- @return CLIOption
 function CLIApp:addOption(option, dataBox, optionDescription) end
 
+--- Parses the provided <args> via CLI12. This is only defined for the root app. This will throw an error if you use it
+--- on an app returned by add_subcommand.
+--- @param args table<string>
+function CLIApp:parse(args) end
+
 --- Create a CLI12 app (lua-representation: CLIApp).
 ---
 --- @param name string A name to show in the `--help`

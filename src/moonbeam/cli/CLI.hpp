@@ -22,11 +22,13 @@ struct AppWrapper {
 
 extern int addFlag(lua_State* L);
 extern int addOption(lua_State* L);
+extern int parse(lua_State* L);
 extern int freeApp(lua_State* L);
 
 inline const static luaL_Reg appMetatable[] = {
     { "addFlag", addFlag },
     { "addOption", addOption },
+    { "parse", parse },
     
     { "__gc", freeApp },
     { nullptr, nullptr },

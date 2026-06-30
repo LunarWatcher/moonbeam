@@ -13,12 +13,14 @@ TestCLI = {
 
         local boolBox = moonlang:newBoolBox()
 
-        local opt = app:addFlag(
+        app:addFlag(
             "-v,--verbose",
             boolBox,
             "Description"
         )
-        print(type(opt))
-        print(getmetatable(opt).__name)
+
+        lu.assertFalse(boolBox:unwrap())
+        app:parse({ "-v" })
+        lu.assertTrue(boolBox:unwrap())
     end,
 }
