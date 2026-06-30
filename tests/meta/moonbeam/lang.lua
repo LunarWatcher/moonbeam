@@ -58,4 +58,8 @@ function lang.newIntBox() end
 --- @return Box<number>
 function lang.newDoubleBox() end
 
+--- Creates a new vector box. This is equivalent to a table of strings
+--- @return Box<table<string>>
+function lang.newStringVecBox() end
+
 return lang

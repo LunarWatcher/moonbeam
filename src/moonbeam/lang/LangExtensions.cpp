@@ -1,5 +1,6 @@
 #include "LangExtensions.hpp"
 #include "moonbeam/udata/TypeRegistry.hpp"
+#include <lua.h>
 #include <variant>
 
 namespace moonbeam {
@@ -26,6 +27,14 @@ int Box::unwrap(lua_State* L) {
         lua_pushnumber(L, std::get<double>(var));
     } else if (std::holds_alternative<bool>(var)) {
         lua_pushboolean(L, std::get<bool>(var));
+    } else if (std::holds_alternative<std::vector<std::string>>(var)) {
+        lua_newtable(L);
+        int index = 0;
+
+        for (auto& value : std::get<std::vector<std::string>>(var)) {
+            lua_pushlstring(L, value.c_str(), value.size());
+            lua_seti(L, -2, ++index);
+        }
     } else {
         return luaL_error(
             L,
@@ -82,6 +91,11 @@ int lang::newIntBox(lua_State* L) {
 }
 int lang::newDoubleBox(lua_State* L) {
     createUdataInstance<double>(L);
+    return 1;
+}
+
+int lang::newStringVecBox(lua_State* L) {
+    createUdataInstance<std::vector<std::string>>(L);
     return 1;
 }
 

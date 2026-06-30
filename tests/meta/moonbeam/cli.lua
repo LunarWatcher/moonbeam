@@ -21,6 +21,18 @@ function CLIApp:addFlag(flag, dataBox, flagDescription) end
 
 --- Add an option, i.e. a `--flag "user-provided value"`.
 ---
+--- There are some other signatures too, including for positional args.
+--- ```
+--- addOption(
+---     -- The name is not significant
+---     "passthrough-args",
+---     -- This must be a box created by moonbeam.lang.newStringVecBox
+---     vecBox,
+---     "Description"
+--- )
+--- ```
+--- Allows `-- extra args` to be forwarded to a subcommand.
+---
 --- @param option string A string representing the option, i.e. `-n,--nuclear-launch-code-location`.
 --- @param dataBox Box<T> A Box that's used for storing the actual value the flag gets.
 --- @param optionDescription string A description of the flag.
@@ -30,6 +42,7 @@ function CLIApp:addOption(option, dataBox, optionDescription) end
 --- Parses the provided <args> via CLI12. This is only defined for the root app. This will throw an error if you use it
 --- on an app returned by add_subcommand.
 --- @param args table<string>
+--- @return table<string> Remaining unparsed args
 function CLIApp:parse(args) end
 
 --- ---- CLIOption defs ------------------------------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 #include <lua.hpp>
 #include <string>
 #include <variant>
+#include <vector>
 
 namespace moonbeam::lang {
 
@@ -13,7 +14,8 @@ struct Box {
         int,
         double,
         std::string,
-        bool
+        bool,
+        std::vector<std::string>
     > value;
 
     bool isBool() const {
@@ -37,12 +39,14 @@ extern int newBoolBox(lua_State* L);
 extern int newStringBox(lua_State* L);
 extern int newIntBox(lua_State* L);
 extern int newDoubleBox(lua_State* L);
+extern int newStringVecBox(lua_State* L);
 
 inline const static luaL_Reg functions[] = {
     { "newBoolBox", newBoolBox },
     { "newStringBox", newStringBox },
     { "newIntBox", newIntBox },
     { "newDoubleBox", newDoubleBox },
+    { "newStringVecBox", newStringVecBox },
     { nullptr, nullptr },
 };
 
